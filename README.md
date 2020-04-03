@@ -166,3 +166,44 @@
 
   * We can disable `.htaccess` and move its content to `vhost` configuration in `docker/Dockerfile/vhost`
 
+## Switch to docker-compose:
+
+* Now we will translate command `docker run --rm -p 8080:80 laravel-docker` to `docker-compose` file!
+
+* Create `docker-compose.yaml`
+
+    ```yaml
+    version: "3"
+    services:
+      app:
+        image: laravel-www
+        container_name: laravel-www
+        build:
+          context: .
+          dockerfile: docker/Dockerfile
+        ports:
+          - 8080:80
+    ```
+    
+    * After creating the file rebuild and run the container in detached mode:
+        ```bash
+        docker-compose up --build -d
+        ```
+
+    * Now we can SSH into container using the service name `app`
+        ```bash
+        docker-compose exec app /bin/bash
+        ```
+
+* **FIX AN ISSUE**
+  * [Dockerfile - Speed Up The Setting of Permissions](https://blog.programster.org/dockerfile-speed-up-the-setting-of-permissions)
+    The `COPY` docker command supports `--chown` which removes the need to do this as a separate `RUN` step
+    * Change this:
+      ```dockerfile
+      COPY . /var/www/html
+      RUN chown -R www-data:www-data /var/www/html
+      ```
+    * To this: 
+      ```dockerfile
+      COPY --chown=www-data:www-data . /var/www/html
+      ```
