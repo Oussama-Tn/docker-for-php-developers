@@ -215,6 +215,47 @@
   /.git
   /node_modules
   ```
-  
+
     * Before the docker CLI sends the context to the docker daemon, it looks for a file named `.dockerignore` in the root directory of the context. If this file exists, the CLI modifies the context to exclude files and directories that match patterns in it
 
+### Add MYSQL Service
+
+```yaml
+version: "3"
+services:
+  app:
+    image: laravel-www
+    container_name: laravel-www
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 8080:80
+  mysql:
+    container_name: laravel-mysql
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: homestead
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+    ports:
+      - 13306:3306
+```
+
+* Install pdo_extension
+  * file `/docker/Dockerfile`
+    ```dockerfile
+    RUN docker-php-ext-install pdo_mysql
+    ```
+  * TO check that it's installed, SSH into our container and run:
+    ```bash
+    php -m | grep mysql  
+    ```
+
+* Build app, SSH into container and run migration!
+    ```bash
+    docker-compose up --build -d
+    docker-compose exec app bash
+    php artisan migrate
+    ```
