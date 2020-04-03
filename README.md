@@ -135,3 +135,34 @@
     http://localhost:8080/
     ```
 
+* **Enable mod_rewrite** 
+  
+  * SSH into our container:
+    ```bash
+    docker ps
+    
+    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+    8184a8219ba8        laravel-docker      "docker-php-entrypoi…"   4 seconds ago       Up 1 second         0.0.0.0:8080->80/tcp   stupefied_mclean
+    
+    docker exec -it 81 bash
+    ```
+  
+  * List apache modules
+    ```bash
+    a2enmod 
+    Your choices are: access_compat actions alias allowmethods asis auth_basic auth_digest auth_form authn_anon authn_core authn_dbd authn_dbm authn_file authn_socache authnz_fcgi authnz_ldap authz_core authz_dbd authz_dbm authz_groupfile authz_host authz_owner authz_user autoindex buffer cache cache_disk cache_socache cern_meta cgi cgid charset_lite data dav dav_fs dav_lock dbd deflate dialup dir dump_io echo env expires ext_filter file_cache filter headers heartbeat heartmonitor http2 ident imagemap include info lbmethod_bybusyness lbmethod_byrequests lbmethod_bytraffic lbmethod_heartbeat ldap log_debug log_forensic lua macro mime mime_magic mpm_event mpm_prefork mpm_worker negotiation php7 proxy proxy_ajp proxy_balancer proxy_connect proxy_express proxy_fcgi proxy_fdpass proxy_ftp proxy_hcheck proxy_html proxy_http proxy_http2 proxy_scgi proxy_wstunnel ratelimit reflector remoteip reqtimeout request rewrite sed session session_cookie session_crypto session_dbd setenvif slotmem_plain slotmem_shm socache_dbm socache_memcache socache_shmcb speling ssl status substitute suexec unique_id userdir usertrack vhost_alias xml2enc
+    Which module(s) do you want to enable (wildcards ok)?
+    ```
+
+  * Enable `rewrite` module
+    ```bash
+    $ a2enmod rewrite
+    Enabling module rewrite.
+    To activate the new configuration, you need to run:
+      service apache2 restart
+    ```
+
+  * Add `a2enmod rewrite` to our '/docker/Dockerfile'
+
+  * We can disable `.htaccess` and move its content to `vhost` configuration in `docker/Dockerfile/vhost`
+
