@@ -259,3 +259,36 @@ services:
     docker-compose exec app bash
     php artisan migrate
     ```
+
+* **Add volume for mysql** Now mysql data won't be lost when we run `docker-compose down` !
+
+    ```yaml
+    version: "3"
+    services:
+      app:
+        image: laravel-www
+        container_name: laravel-www
+        build:
+          context: .
+          dockerfile: docker/Dockerfile
+        ports:
+          - 8080:80
+      mysql:
+        container_name: laravel-mysql
+        image: mysql:5.7
+        volumes:
+          - mysql:/var/lib/mysql
+        environment:
+          MYSQL_DATABASE: homestead
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: homestead
+          MYSQL_PASSWORD: secret
+        ports:
+          - 13306:3306
+    volumes:
+      mysql:
+        driver: "local"
+    ```
+    
+    * Currently have issue with `docker-compose up`
+     => Works only using `docker-compose up -d`
